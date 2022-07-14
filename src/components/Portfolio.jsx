@@ -29,10 +29,10 @@ const Portfolio = () => {
     },
     {
       id: 4,
-      desc:"4. IPFS Hosted Project",
+      desc:"4. Portfolio Project",
       src: portfolio,
-      website: "https://d-bank-hellosumitg.vercel.app/",
-      github: "https://github.com/hellosumitg/dBank"
+      website: "https://portfolio-hellosumitg.vercel.app/",
+      github: "https://github.com/hellosumitg/portfolio"
     }
   ];
 
