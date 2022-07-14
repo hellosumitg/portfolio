@@ -8,7 +8,7 @@ const Portfolio = () => {
   const portfolios = [
     {
       id: 1,
-      desc:"1. Simple Solidity Project",
+      desc:"1. Solidity Project",
       src: whitelist_dapp,
       website: "https://whitelist-dapp-hellosumitg.vercel.app/",
       github: "https://github.com/hellosumitg/whitelist-dapp"
