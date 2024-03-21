@@ -12,35 +12,23 @@ import {
 
 import PostListItem from '../../components/PostListItem'
 import TagListItem from '../../components/TagListItem'
-import ErrorNoFooter from '../../components/errorNoFooter'
-import ErrorNoHeader from '../../components/errorNoHeader'
 import ErrorNoKeys from '../../components/errorNoKeys'
 import Layout from '../../components/layout'
 import config from '../../react-bricks/config'
 
 interface HomeProps {
   errorNoKeys: string
-  errorHeader: string
-  errorFooter: string
   tags: string[]
   posts: types.Page[]
-  header: types.Page
-  footer: types.Page
 }
 
 const BlogList: React.FC<HomeProps> = ({
   tags,
   posts,
   errorNoKeys,
-  errorHeader,
-  errorFooter,
-  header,
-  footer,
 }) => {
   const { pageTypes, bricks } = useReactBricksContext()
-  const headerOk = header ? cleanPage(header, pageTypes, bricks) : null
-  const footerOk = footer ? cleanPage(footer, pageTypes, bricks) : null
-
+  
   return (
     <Layout>
       {!errorNoKeys && (
@@ -49,11 +37,6 @@ const BlogList: React.FC<HomeProps> = ({
             <title>Post List</title>
             <meta name="description" content="React Bricks blog starter" />
           </Head>
-          {headerOk && !errorHeader ? (
-            <PageViewer page={headerOk} />
-          ) : (
-            <ErrorNoHeader />
-          )}
           <div className="bg-white dark:bg-gray-900">
             <div className="max-w-6xl mx-auto px-8 py-16">
               <h1 className="max-w-2xl text-4xl sm:text-6xl lg:text-4xl font-bold tracking-tight text-gray-900 dark:text-white pb-4 mt-10 sm:mt-12 mb-4">
@@ -85,11 +68,6 @@ const BlogList: React.FC<HomeProps> = ({
               </div>
             </div>
           </div>
-          {footerOk && !errorFooter ? (
-            <PageViewer page={footerOk} />
-          ) : (
-            <ErrorNoFooter />
-          )}
         </>
       )}
       {errorNoKeys && <ErrorNoKeys />}
@@ -98,11 +76,7 @@ const BlogList: React.FC<HomeProps> = ({
 }
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  let header: {} | types.Page
-  let footer: {} | types.Page
   let errorNoKeys: boolean = false
-  let errorHeader: boolean = false
-  let errorFooter: boolean = false
 
   if (!config.apiKey) {
     errorNoKeys = true
@@ -118,23 +92,8 @@ export const getStaticProps: GetStaticProps = async (context) => {
       sort: '-publishedAt',
     })
 
-    header = await fetchPage('header', config.apiKey, context.locale)
-      .then(({ author, ...page }) => page)
-      .catch(() => {
-        errorHeader = true
-        return {}
-      })
-
-    footer = await fetchPage('footer', config.apiKey, context.locale)
-      .then(({ author, ...page }) => page)
-      .catch(() => {
-        errorFooter = true
-        return {}
-      })
-
-    return { props: { posts, tags, header, footer, errorHeader, errorFooter } }
   } catch {
-    return { props: { header, footer, errorHeader, errorFooter } }
+    return { props: {} }
   }
 }
 

@@ -11,37 +11,25 @@ import {
   renderMeta,
 } from 'react-bricks/frontend'
 
-import ErrorNoFooter from '../components/errorNoFooter'
-import ErrorNoHeader from '../components/errorNoHeader'
 import ErrorNoKeys from '../components/errorNoKeys'
 import Layout from '../components/layout'
 import config from '../react-bricks/config'
 
 interface PageProps {
   page: types.Page
-  header: types.Page
-  footer: types.Page
   errorNoKeys: boolean
   errorPage: boolean
-  errorHeader: boolean
-  errorFooter: boolean
 }
 
 const Page: React.FC<PageProps> = ({
   page,
-  header,
-  footer,
   errorNoKeys,
   errorPage,
-  errorHeader,
-  errorFooter,
 }) => {
   // Clean the received content
   // Removes unknown or not allowed bricks
   const { pageTypes, bricks } = useReactBricksContext()
   const pageOk = page ? cleanPage(page, pageTypes, bricks) : null
-  const headerOk = header ? cleanPage(header, pageTypes, bricks) : null
-  const footerOk = footer ? cleanPage(footer, pageTypes, bricks) : null
 
   return (
     <Layout>
@@ -51,17 +39,8 @@ const Page: React.FC<PageProps> = ({
             {renderMeta(pageOk)}
             {renderJsonLd(pageOk)}
           </Head>
-          {headerOk && !errorHeader ? (
-            <PageViewer page={headerOk} />
-          ) : (
-            <ErrorNoHeader />
-          )}
+          
           <PageViewer page={pageOk} main />
-          {footerOk && !errorFooter ? (
-            <PageViewer page={footerOk} />
-          ) : (
-            <ErrorNoFooter />
-          )}
         </>
       )}
       {errorNoKeys && <ErrorNoKeys />}
@@ -72,8 +51,6 @@ const Page: React.FC<PageProps> = ({
 export const getStaticProps: GetStaticProps = async (context) => {
   let errorNoKeys: boolean = false
   let errorPage: boolean = false
-  let errorHeader: boolean = false
-  let errorFooter: boolean = false
 
   if (!config.apiKey) {
     errorNoKeys = true
@@ -92,23 +69,11 @@ export const getStaticProps: GetStaticProps = async (context) => {
     cleanSlug = slug.join('/')
   }
 
-  const [page, header, footer] = await Promise.all([
+  const [page] = await Promise.all([
     fetchPage(cleanSlug, config.apiKey, context.locale, config.pageTypes)
       .then(({ author, ...page }) => page)
       .catch(() => {
         errorPage = true
-        return {}
-      }),
-    fetchPage('header', config.apiKey, context.locale)
-      .then(({ author, ...page }) => page)
-      .catch(() => {
-        errorHeader = true
-        return {}
-      }),
-    fetchPage('footer', config.apiKey, context.locale)
-      .then(({ author, ...page }) => page)
-      .catch(() => {
-        errorFooter = true
         return {}
       }),
   ])
@@ -116,12 +81,8 @@ export const getStaticProps: GetStaticProps = async (context) => {
   return {
     props: {
       page,
-      header,
-      footer,
       errorNoKeys,
       errorPage,
-      errorHeader,
-      errorFooter,
     },
   }
 }
